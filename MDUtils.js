@@ -1,3 +1,9 @@
+/*MDUtils.js
+Version: 1.0.0 Dev
+Author: Hypenexy
+License: https://github.com/Hypenexy/MDUtils/blob/main/LICENSE
+*/
+
 /**
  * Load scripts dynamically.
  * @param {*} url The url of the file
