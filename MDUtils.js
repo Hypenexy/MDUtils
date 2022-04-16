@@ -37,6 +37,7 @@ function ButtonEvent(element, action, param){
     }
     element.onkeydown = function(e){
         if(e.key == "Enter" || e.key == " "){
+            e.preventDefault()
             action(param)
         }
     }
