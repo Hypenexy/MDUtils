@@ -32,6 +32,7 @@ License: https://github.com/Hypenexy/MDUtils/blob/main/LICENSE
  * @param {*} param A parameter to call the function with
  */
 function ButtonEvent(element, action, param){
+    element.tabIndex = 0
     element.onclick = function(){
         action(param)
     }
