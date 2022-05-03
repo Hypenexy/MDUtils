@@ -5,6 +5,12 @@ License: https://github.com/Hypenexy/MDUtils/blob/main/LICENSE
 */
 
 /**
+ * Variables
+ */
+ 
+const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+/**
  * Load scripts dynamically.
  * @param {*} url The url of the file
  * @param {*} id The id of the loaded script in the dom
