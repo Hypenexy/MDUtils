@@ -51,6 +51,67 @@ function ButtonEvent(element, action, param){
 }
 
 /**
+ * Warning: WIP Function do not use in production builds. 
+ * Sets an event of an element with styling.
+ * By default it uses one of my styles for buttons. 
+ * @param {*} element Any element
+ * @param {*} action A function
+ * @param {*} hoverstyle CSS to use on mouse over element
+ * @param {*} clickstyle CSS to use momentarily when clicking on the element
+ */
+function ButtonEventStyled(element, action, hoverstyle, clickstyle){
+    element.onmouseenter = function(){
+        if(hoverstyle){
+            element.style = hoverstyle
+        }
+        else{
+            element.style.color = "#fff"
+            element.style.boxShadow = "0 2px 0 #222"
+            element.style.transform = "translateY(-2px)"
+        }
+    }
+    element.onmouseleave = function(){
+        if(hoverstyle){
+            //element.style =
+            //how do I remove the hover style :/
+            //I can't save element.style (not easily) 
+        }
+        else{
+            element.style.color = "#ddd"
+            element.style.removeProperty("box-shadow")
+            element.style.removeProperty("transform")
+        }
+    }
+    function elementaction(){
+        action()
+        if(clickstyle){
+            element.style = clickstyle
+        }
+        else{
+            element.style.color = "#444"
+            element.style.background = "#999"
+            var lastStyle1 = element.style.boxShadow
+            var lastStyle2 = element.style.transform
+            element.style.removeProperty("box-shadow")
+            element.style.removeProperty("transform")
+        }
+        setTimeout(() => {
+            if(clickstyle){
+                //element.style = \
+                //again.. how do I remove it??
+            }
+            else{
+                element.style.boxShadow = lastStyle1
+                element.style.transform = lastStyle2
+                element.style.color = "#ddd"
+                element.style.background = "#444"
+            }
+        }, 200);
+    }
+    ButtonEvent(element, elementaction)
+}
+
+/**
  * Get's an element's offset.
  * @param {*} el Any element
  * @returns An array of the top and left pixels offset of the element.
