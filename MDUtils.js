@@ -108,6 +108,8 @@ function ButtonEventStyled(element, action, hoverstyle, clickstyle){
                     element.style.boxShadow = lastStyle1
                     element.style.transform = lastStyle2
                 }
+                element.style.color = "#ddd"
+                element.style.background = "#444"
             }
         }, 200);
     }
