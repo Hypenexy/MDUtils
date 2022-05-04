@@ -60,7 +60,9 @@ function ButtonEvent(element, action, param){
  * @param {*} clickstyle CSS to use momentarily when clicking on the element
  */
 function ButtonEventStyled(element, action, hoverstyle, clickstyle){
+    var mouseover = false
     element.onmouseenter = function(){
+        mouseover = true
         if(hoverstyle){
             element.style = hoverstyle
         }
@@ -71,6 +73,7 @@ function ButtonEventStyled(element, action, hoverstyle, clickstyle){
         }
     }
     element.onmouseleave = function(){
+        mouseover = false
         if(hoverstyle){
             //element.style =
             //how do I remove the hover style :/
@@ -101,10 +104,10 @@ function ButtonEventStyled(element, action, hoverstyle, clickstyle){
                 //again.. how do I remove it??
             }
             else{
-                element.style.boxShadow = lastStyle1
-                element.style.transform = lastStyle2
-                element.style.color = "#ddd"
-                element.style.background = "#444"
+                if(mouseover==true){
+                    element.style.boxShadow = lastStyle1
+                    element.style.transform = lastStyle2
+                }
             }
         }, 200);
     }
