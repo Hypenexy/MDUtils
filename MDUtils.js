@@ -60,6 +60,9 @@ function ButtonEvent(element, action, param){
  * @param {*} clickstyle CSS to use momentarily when clicking on the element
  */
 function ButtonEventStyled(element, action, hoverstyle, clickstyle){
+    if(!hoverstyle){
+        element.style = 'transition:.2s;cursor:pointer;background:#444;padding: 4px;margin: 4px;border-radius:4px'
+    }
     var mouseover = false
     element.onmouseenter = function(){
         mouseover = true
