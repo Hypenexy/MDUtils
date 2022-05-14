@@ -120,6 +120,38 @@ function ButtonEventStyled(element, action, hoverstyle, clickstyle){
 }
 
 /**
+ * A function to foreach an array with a delay!
+ * @param {*} array Any array.
+ * @param {*} action A function to execute. The current element is a paramater.
+ * @param {*} delay The delay in milliseconds.
+ * @param {*} startInstant Bool to decide if the first element should be immediately executed.
+ */
+ function foreachDelayed(array, action, delay, startInstant){
+    var i = 0
+    var delayPreserve = 0
+    function forarray(){
+        if(startInstant==true){
+            if(delay!=0&&delayPreserve==0){
+                delayPreserve = delay
+                delay = 0
+            }
+            else{
+                startInstant = false
+                delay = delayPreserve
+            }
+        }
+        setTimeout(function(){
+            action(array[i])        
+            i++
+            if(i!=array.length){
+                forarray()
+            }
+        }, delay)
+    }
+    forarray()
+}
+
+/**
  * Get's an element's offset.
  * @param {*} el Any element
  * @returns An array of the top and left pixels offset of the element.
