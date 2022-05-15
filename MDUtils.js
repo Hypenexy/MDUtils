@@ -36,16 +36,27 @@ const monthNames = ["January", "February", "March", "April", "May", "June", "Jul
  * @param {*} element Any element
  * @param {*} action A function
  * @param {*} param A parameter to call the function with
+ * @param {*} event A bool to decide if the event is passed as the first parameter 
  */
-function ButtonEvent(element, action, param){
+function ButtonEvent(element, action, param, event){
     element.tabIndex = 0
-    element.onclick = function(){
-        action(param)
+    element.onclick = function(e){
+        if(event==true){
+            action(e, param)
+        }
+        else{
+            action(param)
+        }
     }
     element.onkeydown = function(e){
         if(e.key == "Enter" || e.key == " "){
             e.preventDefault()
-            action(param)
+            if(event==true){
+                action(e, param)
+            }
+            else{
+                action(param)
+            }
         }
     }
 }
