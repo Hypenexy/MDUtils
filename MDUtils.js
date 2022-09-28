@@ -11,10 +11,10 @@ License: https://github.com/Hypenexy/MDUtils/blob/main/LICENSE
 const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
 /**
- * Load scripts dynamically.
- * @param {*} url The url of the file
- * @param {*} id The id of the loaded script in the dom
- * @param {*} onload A function to call after it's finished loading
+ * Load JavaScript code/file dynamically.
+ * @param {URL} url The path of the file
+ * @param {String} id The id of the loaded script in the dom
+ * @param {Function} onload A function to call after it's finished loading
  */
  function loadScript(url, id, onload) {
     var script = document.createElement("script")
@@ -30,6 +30,34 @@ const monthNames = ["January", "February", "March", "April", "May", "June", "Jul
         }
     }
 }
+
+/**
+ * Load CSS files dynamically.
+ * @param {URL} url The path of the file
+ * @param {String} id The id of the loaded script in the dom
+ * @param {Function} onload A function to call after it's finished loading
+ */
+function loadCSS(url, id, onload){
+    var file = url
+
+    var link = document.createElement("link")
+    link.href = file.substr(0, file.lastIndexOf(".")) + ".css"
+    link.type = "text/css"
+    link.rel = "stylesheet"
+    link.media = "screen,print"
+    if(id){
+        link.id = id
+    }
+
+    document.getElementsByTagName("head")[0].appendChild(link)
+
+    if(onload){ // IDK If this works or not. Too lazy to test. sry
+        link.onload = function(){
+            onload()
+        }
+    }
+}
+
 
 /**
  * Sets an event of an element.
@@ -112,7 +140,7 @@ function ButtonEventStyled(element, action, hoverstyle, clickstyle){
             element.style.removeProperty("box-shadow")
             element.style.removeProperty("transform")
         }
-        setTimeout(() => {
+        setTimeout(function() {
             if(clickstyle){
                 //element.style = \
                 //again.. how do I remove it??
@@ -165,7 +193,7 @@ function ButtonEventStyled(element, action, hoverstyle, clickstyle){
 /**
  * Get's an element's offset.
  * @param {*} el Any element
- * @returns An array of the top and left pixels offset of the element.
+ * @returns A JSON of the top and left pixels offset, in a number, of the element.
  */
 function getOffset(el){
     var _x = 0
@@ -261,4 +289,54 @@ function shuffle(array) {
     }
 
     return array;
+}
+
+/**
+ * Tries to parse a string safely without errors.
+ * Wait maybe this is a bad idea and you should just fix your code!
+ * @param {*} jsonString 
+ * @returns A parsed JSON or false if it failed parsing.
+ */
+function safeJSONparse(jsonString) {
+    try {
+        json = JSON.parse(jsonString)
+        return json
+    } catch (e) {
+        return false
+    }
+}
+
+/**
+ * This function isn't mine it's shamelessly stolen by thomas-peter on stackoverflow, thank you!
+ * @param {*} object Any object
+ * @returns A number of the approximate size of the parameter in bytes.
+ */
+function roughSizeOfObject(object){
+    var objectList = []
+    var stack = [object]
+    var bytes = 0
+    while (stack.length) {
+        var value = stack.pop()
+
+        if ( typeof value === 'boolean' ) {
+            bytes += 4
+        }
+        else if ( typeof value === 'string' ) {
+            bytes += value.length
+        }
+        else if ( typeof value === 'number' ) {
+            bytes += 8
+        }
+        else if(
+            typeof value === 'object'
+            && objectList.indexOf(value) === -1
+        ){
+            objectList.push( value )
+
+            for( var i in value ) {
+                stack.push(value[i])
+            }
+        }
+    }
+    return bytes;
 }
