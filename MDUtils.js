@@ -627,3 +627,88 @@ function matchCharsInString(Search, Item){
     })
     return res
 }
+
+/**
+ * Converts color rgba to hex values.
+ * @param {Int} r Red value 
+ * @param {Int} g Green value 
+ * @param {Int} b Blue value
+ * @param {Int} a Alpha value
+ * @returns The hex variant of the rgba specified.
+ */
+function rgbaToHex(r, g, b, a){
+    function componentToHex(c){
+        if(c==0){
+            return "00";
+        }
+        var hex = c.toString(16);
+        return hex.length == 1 ? "0" + hex : hex;
+    }
+    var hex = "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+    if(a || a==0){
+        if(a!=255){
+            hex += componentToHex(a);
+        }
+    }
+    return hex;
+}
+
+
+function timeDifference(current, previous) {
+
+    var msPerMinute = 60 * 1000;
+    var msPerHour = msPerMinute * 60;
+    var msPerDay = msPerHour * 24;
+    var msPerMonth = msPerDay * 30;
+    var msPerYear = msPerDay * 365;
+
+    var elapsed = current - previous;
+
+    if (elapsed < msPerMinute) {
+         return Math.round(elapsed/1000) + ' seconds ago';   
+    }
+
+    else if (elapsed < msPerHour) {
+         return Math.round(elapsed/msPerMinute) + ' minutes ago';   
+    }
+
+    else if (elapsed < msPerDay ) {
+         return Math.round(elapsed/msPerHour ) + ' hours ago';   
+    }
+
+    else if (elapsed < msPerMonth) {
+        return Math.round(elapsed/msPerDay) + ' days ago';   
+    }
+
+    else if (elapsed < msPerYear) {
+        return Math.round(elapsed/msPerMonth) + ' months ago';   
+    }
+
+    else {
+        return Math.round(elapsed/msPerYear ) + ' years ago';   
+    }
+}
+
+/**
+ * Download data on a file
+ * @param {*} data Contents in file
+ * @param {*} filename File name
+ * @param {*} type Blob type
+ */
+function downloadFile(data, filename, type) {
+    var file = new Blob([data], {type: type});
+    if (window.navigator.msSaveOrOpenBlob) // IE10+
+        window.navigator.msSaveOrOpenBlob(file, filename);
+    else { // Others
+        var a = document.createElement("a"),
+                url = URL.createObjectURL(file);
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(function() {
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);  
+        }, 0); 
+    }
+}
