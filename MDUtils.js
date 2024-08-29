@@ -214,14 +214,14 @@ function getOffset(el){
 function getBoundingClientRectObject(element) {
     var rect = element.getBoundingClientRect()
     return {
-      top: rect.top,
-      right: rect.right,
-      bottom: rect.bottom,
-      left: rect.left,
-      width: rect.width,
-      height: rect.height,
-      x: rect.x,
-      y: rect.y
+        top: rect.top,
+        right: rect.right,
+        bottom: rect.bottom,
+        left: rect.left,
+        width: rect.width,
+        height: rect.height,
+        x: rect.x,
+        y: rect.y
     }
 }
 
@@ -230,7 +230,7 @@ function getBoundingClientRectObject(element) {
  * @param {JSON} offset Takes a JSON as a parameter
  * @returns the same JSON but with calculated value if it's out of the screen 
  */
-function normalizeOffset(offset){
+function normalizeOffsetRightBottom(offset){
     if(offset.right === undefined){ // I'm not sure if this is a proper way to check for undefined
         if(offset.width&&offset.left){
             offset.right = offset.left+offset.width
@@ -248,6 +248,21 @@ function normalizeOffset(offset){
         offset.top = offset.top - (offset.bottom - window.innerHeight)
     }
     return offset
+}
+function normalizeOffset(offset){
+    if(offset[0] <= 0){
+        offset[0] = 0;
+    }
+    if(offset[1] <= 0){
+        offset[1] = 0;
+    }
+    if(offset[2] >= window.innerWidth){
+        offset[0] = offset[0] - (offset[2] - window.innerWidth);
+    }
+    if(offset[3] >= window.innerHeight){
+        offset[1] = offset[1] - (offset[3] - window.innerHeight); 
+    }
+    return offset;
 }
 
 /**
@@ -351,7 +366,7 @@ function safeJSONparse(jsonString) {
 }
 
 /**
- * This function isn't mine it's shamelessly stolen by thomas-peter on stackoverflow, thank you!
+ * This function isn't mine it's shamelessly stolen by thomas-peter on stackoverflow, thank you! Actually this might be wrong for the string value since it takes 2 bytes for UNICODE!
  * @param {*} object Any object
  * @returns A number of the approximate size of the parameter in bytes.
  */
@@ -366,7 +381,7 @@ function roughSizeOfObject(object){
             bytes += 4
         }
         else if ( typeof value === 'string' ) {
-            bytes += value.length
+            bytes += value.length * 2
         }
         else if ( typeof value === 'number' ) {
             bytes += 8
@@ -711,4 +726,115 @@ function downloadFile(data, filename, type) {
             window.URL.revokeObjectURL(url);  
         }, 0); 
     }
+}
+
+/**
+ * Converts recursive objects to query string for the PHP Server.
+ * @param {Object} obj Object to be converted
+ * @param {String} prefix idk
+ * @returns String that is query string of the object
+ */
+queryStringSerialize = function(obj, prefix) {
+    var str = [],
+        p;
+    for (p in obj) {
+        if (obj.hasOwnProperty(p)) {
+            var k = prefix ? prefix + "[" + p + "]" : p,
+                v = obj[p];
+            str.push((v !== null && typeof v === "object") ?
+                queryStringSerialize(v, k) :
+                encodeURIComponent(k) + "=" + encodeURIComponent(v));
+        }
+    }
+    return str.join("&");
+}
+
+
+/**
+ * Creates an element and appends it
+ * @param {String} tag The class of the element
+ * @param {Element} parent The parent to append it to
+ * @returns The created element
+ */
+function createAppendElement(tag, parent){
+    const element = document.createElement("div");
+    element.classList.add(tag);
+    parent.appendChild(element);
+    return element;
+}
+
+/**
+ * Creates an icon tag and appends it
+ * @param {String} tag The class of the element
+ * @param {Element} parent The parent to append it to
+ * @returns The created element
+ */
+function createAppendIcon(icon, tag, parent){
+    const element = document.createElement("i");
+    element.classList.add(tag);
+    element.innerText = icon;
+    parent.appendChild(element);
+    return element;
+}
+
+/**
+ * TODO: I need to figure out how to remove tooltips!
+ * 
+ * ! This function is compatible only with app.js and app.css from the newest WriteNote repo. 
+ * Displays tooltip on hover of element
+ * @param {HTMLElement} element The element that will have a tooltip
+ * @param {String} text Text displayed at the tooltip
+ * @param {Boolean} isInstant True if the tooltip will show instantly and not when hovered for .5 seconds
+ */
+function attachTooltip(element, text, isInstant){
+    const tooltipElement = document.createElement("div");
+    tooltipElement.classList.add("tooltip");
+    tooltipElement.innerHTML = text;
+    function toolClick(){
+        tooltipElement.remove();
+        tooltipElement.classList.remove("active");
+    }
+    element.addEventListener("click", toolClick);
+
+    function toolMouseMove(e){
+        var offset = getBoundingClientRectObject(tooltipElement);
+        tooltipElement.style.left = (e.clientX - offset.width / 2) + "px";
+        var normalOffset = normalizeOffsetRightBottom(getBoundingClientRectObject(tooltipElement));
+        tooltipElement.style.left = normalOffset.left + "px"
+    }
+    element.addEventListener("mousemove", toolMouseMove);
+
+    function toolMouseEnter(e){
+        app.appendChild(tooltipElement);
+        var elementRects = element.getClientRects();
+        tooltipElement.style.top = (e.clientY + 22) + "px";
+        if(e.clientY + 22 < elementRects[0].bottom){
+            tooltipElement.style.top = elementRects[0].bottom + "px";
+        }
+        var offset = normalizeOffset(getBoundingClientRectObject(tooltipElement))
+        tooltipElement.style.top = offset.top + "px"
+        tooltipElement.style.left = offset.left + "px"
+        if(!isInstant){
+            tooltipElement.classList.add("delayed");
+        }
+        tooltipElement.classList.add("active");
+    }
+    element.addEventListener("mouseenter", toolMouseEnter);
+
+    function toolMouseLeave(){
+        tooltipElement.remove();
+        tooltipElement.classList.remove("active");
+    }
+    element.addEventListener("mouseleave", toolMouseLeave);
+
+    function removeTooltip(){
+        tooltipElement.remove();
+        tooltipElement.classList.remove("active");
+        element.removeEventListener("click", toolClick);
+        element.removeEventListener("mousemove", toolMouseMove);
+        element.removeEventListener("mouseenter", toolMouseEnter);
+        element.removeEventListener("mouseleave", toolMouseLeave);
+    }
+
+    return removeTooltip;
 }
